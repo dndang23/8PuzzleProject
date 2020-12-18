@@ -16,6 +16,7 @@ TEST_PUZZLE = [[1,2,3],[4,5,6],[7,8,0]]
 def main():
     global SCREEN
     temp = Board(TEST_PUZZLE)
+    temp = shuffle_board(temp)
     pygame.init()
     pygame.display.set_caption("8 Puzzle Visualizer")
     SCREEN = pygame.display.set_mode((WINDOW_HEIGHT, WINDOW_WIDTH))
@@ -62,7 +63,21 @@ def draw_grid2(row, column, board):
                 SCREEN.blit(text, text_rect)
 
 def shuffle_board(board):
-    return 0
+    shuffle_list = []
+    board_list = board.board
+    shuffle_to_board_list = []
+    for x in range(ROW):
+        for y in range(COLUMN):
+            shuffle_list.append(board_list[x][y])
+    n = len(shuffle_list) - 1
+    
+    for i in range(n - 1, 0, -1):
+        j = random.randint(0, i + 1)
+        shuffle_list[i], shuffle_list[j] = shuffle_list[j], shuffle_list[i]
+
+    shuffle_to_board_list = [shuffle_list[r * ROW:(r + 1) * COLUMN] for r in range(0, ROW)]
+    new_board = Board(shuffle_to_board_list)
+    return new_board
 
 if __name__ == "__main__":
     main()
