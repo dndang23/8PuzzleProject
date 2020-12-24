@@ -122,13 +122,14 @@ def main():
     tiles = [[8, 6, 7], [2, 5, 4], [3, 0, 1]]
     tiles2 = [[5, 1, 3, 2], [10, 6, 15, 7], [9, 8, 11, 4], [0, 13, 14, 12]]
     tiles3 = [[1, 2, 3], [4, 6, 5], [7, 8, 0]]
-    board = Board(tiles2)
+    tiles4 = [[4, 2, 3], [1, 8, 5], [7, 6, 0]]
+    board = Board(tiles4)
     sol = Solver(board)
-    sol.solution()
-
-
+    print("The board is solvable? " + str(sol.isSolvable()))
+    '''
     for i in sol.solution():
         print(i)
+    '''
 
 if __name__ == "__main__":
     main()
