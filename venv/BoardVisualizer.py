@@ -4,15 +4,19 @@ import random
 from Board import Board
 from SearchNode import SearchNode
 from Solver import Solver
-from PIL import Image, ImageFilter
+import copy
+import time
 
 """
 --------------Stuff I Still Need to Finish--------------
 1. Intro
-2. Solver mechanic
-3. Pause Sprite
+2. Solver mechanic (Done)
+3. Pause Sprite (Done)
 4. Move Counter (Done)
-5. Game Over Screen
+5. Timer (Display Timer)
+6. Game Over Screen (Done)
+7. Pause Mechanic
+8. Other puzzle modes (maybe)
 """
 
 BLACK = (0, 0, 0)
@@ -21,6 +25,8 @@ WHITE = (255, 255, 255)
 GRAY = (150, 150, 150)
 EMERALD_GREEN = (80, 220, 100)
 DARK_EMERALD_GREEN = (8, 101, 34)
+CARDINAL_RED = (196, 30, 58)
+CRIMSON_RED = (153, 0, 0)
 ROW = 3
 COLUMN = 3
 WINDOW_WIDTH = 700
@@ -28,21 +34,26 @@ WINDOW_HEIGHT = 700
 OFFSET = 200
 TEST_PUZZLE = [[1,2,3],[4,5,6],[7,8,0]]
 trophy_img = pygame.image.load("trophy2.png")
+pause_img = pygame.image.load("pause2.png")
+smile_img = pygame.image.load("smile2.png")
 
 def main():
-    global SCREEN, GAME_OVER, NUM_MOVES
+    global SCREEN, GAME_OVER, NUM_MOVES, NICE_TRY, START, END
     NUM_MOVES = 0
     TEMP_NUM_MOVES = float('inf')
+    TEMP_TIMER = float('inf')
     GAME_OVER = False
-    #board_list = shuffle_a_solvable_board(Board(TEST_PUZZLE)).board
-    board_list = TEST_PUZZLE
-    temp_board_list = board_list.copy()
+    NICE_TRY = False
+    board_list = shuffle_a_solvable_board(Board(TEST_PUZZLE)).board
+    #board_list = TEST_PUZZLE
+    temp_board_list = copy.deepcopy(board_list)
     print(board_list)
     pygame.init()
     pygame.display.set_caption("8 Puzzle Visualizer")
     SCREEN = pygame.display.set_mode((WINDOW_HEIGHT, WINDOW_WIDTH))
-    SCREEN.fill(WHITE)
+    #SCREEN.fill(WHITE)
     # draw_grid2(ROW, COLUMN, board_list)
+    START = time.time()
 
     while True:
         while GAME_OVER == True:
@@ -62,15 +73,6 @@ def main():
                                           trophy_img_size, trophy_img_size)
 
             SCREEN.blit(trophy_img, (trophy_img_center_x, trophy_img_center_y))
-            '''
-            trophy_txt_box_size = trophy_img_size + 20
-            trophy_text_box_border = 1
-            trophy_txt_box_center_x = int(WINDOW_WIDTH/2 - trophy_txt_box_size/2)
-            trophy_txt_box_center_y = int(WINDOW_HEIGHT/2 - trophy_txt_box_size/2) - 45
-            trophy_text_box = pygame.Rect(trophy_txt_box_center_x, trophy_txt_box_center_y,
-                                       trophy_txt_box_size, trophy_txt_box_size + 10)
-            pygame.draw.rect(SCREEN, RED, trophy_text_box, trophy_text_box_border)
-            '''
 
             congrats_msg_font_size = 17
             congrats_msg_box = write_centered_message('freesansbold.ttf', congrats_msg_font_size, "Nice Job!", BLACK, int(trophy_img_center_x + trophy_img_size/2), int(trophy_img_center_y + trophy_img_size + congrats_msg_font_size))
@@ -79,9 +81,10 @@ def main():
             offset = 5
             num_moves_box = write_centered_message('freesansbold.ttf', num_moves_msg_font_size, "Total Moves Made: " + str(NUM_MOVES), BLACK, int(trophy_img_center_x + trophy_img_size/2), int(trophy_img_center_y + trophy_img_size + congrats_msg_font_size + num_moves_msg_font_size + offset))
 
-            timer_msg_font_size = 15
-            timer_box = write_centered_message('freesansbold.ttf', timer_msg_font_size, "Time Finished: 60 seconds", BLACK, int(trophy_img_center_x + trophy_img_size/2), int(trophy_img_center_y + trophy_img_size + congrats_msg_font_size + num_moves_msg_font_size + + timer_msg_font_size + offset))
+            seconds = int(END - START)
 
+            timer_msg_font_size = 15
+            timer_box = write_centered_message('freesansbold.ttf', timer_msg_font_size, "Time Finished: " + str(seconds) + " seconds", BLACK, int(trophy_img_center_x + trophy_img_size/2), int(trophy_img_center_y + trophy_img_size + congrats_msg_font_size + num_moves_msg_font_size + + timer_msg_font_size + offset))
 
             record_offset = 8
             record_num_moves_msg_font_size = 15
@@ -89,11 +92,13 @@ def main():
             if NUM_MOVES < TEMP_NUM_MOVES:
                 TEMP_NUM_MOVES = NUM_MOVES
 
-            record_num_moves_box = write_centered_message('freesansbold.ttf', num_moves_msg_font_size, "Best Moves Made: " + str(TEMP_NUM_MOVES), RED, int(trophy_img_center_x + trophy_img_size/2), timer_box[1] + timer_box[3] + record_offset)
+            record_num_moves_box = write_centered_message('freesansbold.ttf', num_moves_msg_font_size, "Least Moves Made: " + str(TEMP_NUM_MOVES), RED, int(trophy_img_center_x + trophy_img_size/2), timer_box[1] + timer_box[3] + record_offset)
+
+            if seconds < TEMP_TIMER:
+                TEMP_TIMER = seconds
 
             record_timer_msg_font_size = 15
-            record_timer_box = write_centered_message('freesansbold.ttf', record_timer_msg_font_size, "Best Time Finished: 60 seconds", RED, int(trophy_img_center_x + trophy_img_size/2), record_num_moves_box[1] + record_num_moves_box[3] + offset)
-
+            record_timer_box = write_centered_message('freesansbold.ttf', record_timer_msg_font_size, "Best Time Finished: " + str(TEMP_TIMER) + " seconds", RED, int(trophy_img_center_x + trophy_img_size/2), record_num_moves_box[1] + record_num_moves_box[3] + offset)
 
             reset_rect_offset = 5
             reset_rect_width = record_timer_box[2]//2
@@ -130,11 +135,9 @@ def main():
             diff_text_size = 10
             write_centered_message('freesansbold.ttf', diff_text_size, "Play new puzzle", BLACK, diff_rect[0] + diff_rect[2]//2 , diff_rect[1] + diff_rect[3]//2)
 
-
-
             pygame.display.update()
 
-            print("The current board list is: " + str(temp_board_list))
+            #print("The current board list is: " + str(temp_board_list))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -142,26 +145,155 @@ def main():
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if reset_rect[0] <= mouse[0] <= reset_rect[0] + reset_rect[2] and reset_rect[1] <= mouse[1] <= \
                             reset_rect[1] + reset_rect[3]:
-                        GAME_OVER = False
-                        board_list = temp_board_list.copy()
-                        print("temp board list is: " + str(temp_board_list))
+                        board_list = copy.deepcopy(temp_board_list)
+                        #print("temp board list is: " + str(temp_board_list))
+                        #print("ID of board list: " + str(id(board_list)))
                     elif diff_rect[0] <= mouse[0] <= diff_rect[0] + diff_rect[2] and diff_rect[1] <= mouse[1] <= \
                             diff_rect[1] + diff_rect[3]:
-                        GAME_OVER = False
                         TEMP_NUM_MOVES = float('inf')
-                        board_list = shuffle_a_solvable_board(Board(TEST_PUZZLE)).board
-                        temp_board_list = board_list.copy()
-                        print("temp board list2 is: " + str(temp_board_list))
+                        TEMP_TIMER = float('inf')
+                        board_list = shuffle_a_solvable_board(Board(board_list)).board
+                        temp_board_list = copy.deepcopy(board_list)
+                        #print("temp board list2 is: " + str(temp_board_list))
+                        #print(id(temp_board_list))
 
+                    GAME_OVER = False
                     NUM_MOVES = 0
+                    START = time.time()
+
+        while NICE_TRY == True:
+            SCREEN.fill(WHITE)
+            nice_try_box_size = WINDOW_HEIGHT // 2
+            nice_try_box_border = 10
+            nice_try_box_offset = 10
+            nice_try_box_center_x = int(WINDOW_WIDTH / 2 - nice_try_box_size / 2)
+            nice_try_box_center_y = int(WINDOW_HEIGHT / 2 - nice_try_box_size / 2)
+            nice_try_box = pygame.Rect(nice_try_box_center_x, nice_try_box_center_y,
+                                       nice_try_box_size, nice_try_box_size - nice_try_box_offset)
+            pygame.draw.rect(SCREEN, BLACK, nice_try_box, nice_try_box_border)
+
+            smile_img_size = smile_img.get_rect().size[0]
+            smile_img_center_x = int(WINDOW_WIDTH / 2 - smile_img_size / 2)
+            smile_img_center_y = int(WINDOW_HEIGHT / 2 - smile_img_size / 2) - 55
+            smile_text_box = pygame.Rect(smile_img_center_x, smile_img_center_y,
+                                          smile_img_size, smile_img_size)
+
+            SCREEN.blit(smile_img, (smile_img_center_x, smile_img_center_y))
+
+            nice_try_msg_font_size = 22
+            nice_try_offset = smile_img_size//4 + 3
+            nice_try_msg_box = write_centered_message('freesansbold.ttf', nice_try_msg_font_size, "Good Try!", BLACK, nice_try_box_center_x + nice_try_box_size//2, nice_try_box_center_y + nice_try_box_size//2 + nice_try_offset)
+            #print(str(nice_try_box_center_x + nice_try_box_size // 2))
+
+            encourage_msg_font_size = 22
+            encourage_offset = 10
+            encourage_box = write_centered_message('freesansbold.ttf', encourage_msg_font_size, "You can do it!", BLACK, nice_try_box_center_x + nice_try_box_size//2, nice_try_msg_box[1] + nice_try_msg_box[3] + encourage_offset)
+
+
+            reset_rect_offset = 15
+            reset_rect_width = encourage_box[2]//2 + reset_rect_offset
+            reset_rect_height = (nice_try_box_size - smile_img_size - nice_try_msg_box[3] - encourage_box[3])//2
+            reset_rect_border = 1
+            reset_rect_center_x = encourage_box[0] + encourage_box[2]//2 + 5 - reset_rect_width - 10
+            reset_rect_center_y = encourage_box[1] + encourage_box[3] + 10
+            reset_rect = pygame.Rect(reset_rect_center_x, reset_rect_center_y,
+                                          reset_rect_width, reset_rect_height)
+            pygame.draw.rect(SCREEN, DARK_EMERALD_GREEN, reset_rect, reset_rect_border)
+            SCREEN.fill(DARK_EMERALD_GREEN, reset_rect)
+
+            diff_rect_offset = 20
+            diff_rect_width = encourage_box[2]//2 + diff_rect_offset
+            diff_rect_height = (nice_try_box_size - smile_img_size - nice_try_msg_box[3] - encourage_box[3])//2
+            diff_rect_border = 1
+            diff_rect_center_x = encourage_box[0] + encourage_box[2]//2 + 5
+            diff_rect_center_y = encourage_box[1] + encourage_box[3] + 10
+            diff_rect = pygame.Rect(diff_rect_center_x, diff_rect_center_y,
+                                          diff_rect_width, diff_rect_height)
+            pygame.draw.rect(SCREEN, DARK_EMERALD_GREEN, diff_rect, diff_rect_border)
+            SCREEN.fill(DARK_EMERALD_GREEN, diff_rect)
+
+            mouse = pygame.mouse.get_pos()
+
+            if reset_rect[0] <= mouse[0] <= reset_rect[0] + reset_rect[2] and reset_rect[1] <= mouse[1] <= reset_rect[1] + reset_rect[3]:
+                SCREEN.fill(EMERALD_GREEN, reset_rect)
+            elif diff_rect[0] <= mouse[0] <= diff_rect[0] + diff_rect[2] and diff_rect[1] <= mouse[1] <= diff_rect[1] + diff_rect[3]:
+                SCREEN.fill(EMERALD_GREEN, diff_rect)
+
+            reset_text_size = 10
+            write_centered_message('freesansbold.ttf', reset_text_size, "Repeat puzzle", BLACK, reset_rect[0] + reset_rect[2]//2, reset_rect[1] + reset_rect[3]//2)
+
+            diff_text_size = 10
+            write_centered_message('freesansbold.ttf', diff_text_size, "Play new puzzle", BLACK, diff_rect[0] + diff_rect[2]//2 , diff_rect[1] + diff_rect[3]//2)
+
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if reset_rect[0] <= mouse[0] <= reset_rect[0] + reset_rect[2] and reset_rect[1] <= mouse[1] <= \
+                            reset_rect[1] + reset_rect[3]:
+                        board_list = copy.deepcopy(temp_board_list)
+                        # print("temp board list is: " + str(temp_board_list))
+                        # print("ID of board list: " + str(id(board_list)))
+                    elif diff_rect[0] <= mouse[0] <= diff_rect[0] + diff_rect[2] and diff_rect[1] <= mouse[1] <= \
+                            diff_rect[1] + diff_rect[3]:
+                        TEMP_NUM_MOVES = float('inf')
+                        TEMP_TIMER = float('inf')
+                        board_list = shuffle_a_solvable_board(Board(board_list)).board
+                        temp_board_list = copy.deepcopy(board_list)
+                        # print("temp board list2 is: " + str(temp_board_list))
+                        # print(id(temp_board_list))
+
+                    NICE_TRY = False
+                    NUM_MOVES = 0
+                    START = time.time()
+
+
 
         SCREEN.fill(WHITE)
         score(NUM_MOVES)
         draw_grid2(ROW, COLUMN, board_list)
 
+        pause_offset = 1
+        pause_img_size = pause_img.get_rect().size[0]
+        pause_img_center_x = WINDOW_WIDTH - pause_img_size - pause_offset
+        pause_img_center_y = 0
+        pause_text_box = pygame.Rect(pause_img_center_x, pause_img_center_y,
+                                      pause_img_size, pause_img_size)
+
+        SCREEN.blit(pause_img, (pause_img_center_x, pause_img_center_y))
+
+        solver_rect_width = 150
+        solver_rect_height = 50
+        solver_rect_offset = 0
+        solver_rect_x = 2
+        solver_rect_y = WINDOW_HEIGHT - solver_rect_height - 4
+        solver_rect = pygame.Rect(solver_rect_x, solver_rect_y,
+                                solver_rect_width, solver_rect_height)
+        pygame.draw.rect(SCREEN, BLACK, solver_rect)
+        SCREEN.fill(CRIMSON_RED, solver_rect)
+        draw_border_rect(BLACK, solver_rect[0], solver_rect[1], solver_rect[2], solver_rect[3], 4)
+
+        mouse_sol = pygame.mouse.get_pos()
+
+        if solver_rect[0] <= mouse_sol[0] <= solver_rect[0] + solver_rect[2] and solver_rect[1] <= mouse_sol[1] <= solver_rect[1] + \
+                solver_rect[3]:
+            SCREEN.fill(CARDINAL_RED, solver_rect)
+            draw_border_rect(BLACK, solver_rect[0], solver_rect[1], solver_rect[2], solver_rect[3], 4)
+
+        solver_text_size = 10
+        write_centered_message('freesansbold.ttf', solver_text_size, "Struggling?", BLACK,
+                               solver_rect[0] + solver_rect[2] // 2, solver_rect[1] + solver_rect[3] // 2 - 5)
+        write_centered_message('freesansbold.ttf', solver_text_size, "Click for solution", BLACK,
+                               solver_rect[0] + solver_rect[2] // 2, solver_rect[1] + solver_rect[3] // 2 + 5)
+
+        #print("In game, the temp_board_list is: " + str(temp_board_list))
+
         if Board(board_list).isGoal() == True:
-            print(board_list)
+            #print(board_list)
             GAME_OVER = True
+            END = time.time()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -180,21 +312,34 @@ def main():
                     if board_list[row][column] != 0 and checker == True:
                         board_list[row][column], board_list[new_row][new_column] = board_list[new_row][new_column], board_list[row][column]
                         NUM_MOVES = NUM_MOVES + 1
-                        print("Number of moves made: " + str(NUM_MOVES))
+                        #print("Number of moves made: " + str(NUM_MOVES))
+                elif solver_rect[0] <= position[0] <= solver_rect[0] + solver_rect[2] and solver_rect[1] <= position[1] <= solver_rect[1] + \
+                solver_rect[3]:
+                    #print("time to go")
+                    sol = Solver(Board(board_list))
+                    clock = pygame.time.Clock()
+                    frames_per_second = 3
+                    for i in sol.solution():
+                        board_list = i.board
+                        SCREEN.fill(WHITE)
+                        draw_grid2(ROW, COLUMN, board_list)
+                        pygame.display.update()
+                        clock.tick(frames_per_second)
+                    NICE_TRY = True
+                    END = time.time()
+                elif pause_img_center_x <= position[0] <= pause_img_center_x + pause_img_size and pause_img_center_y <= position[1] <= pause_img_center_y + pause_img_size:
+                    print("bizzare")
 
         pygame.display.update()
 
     pygame.quit()
 
-def draw_grid(row, column):
-    block_size = 100
-    rect_thickness = 5
-    for x in range(row):
-        for y in range(column):
-            rect = pygame.Rect((x * block_size) + OFFSET, (y * block_size) + OFFSET,
-                               block_size, block_size)
-            pygame.draw.rect(SCREEN, BLACK, rect, rect_thickness)
-            SCREEN.fill(GRAY, rect)
+def draw_border_rect(color, x_coor, y_coor, width, height, thickness):
+    pygame.draw.line(SCREEN, color, (x_coor, y_coor), (x_coor + width, y_coor), thickness)
+    pygame.draw.line(SCREEN, BLACK, (x_coor + width, y_coor), (x_coor + width, y_coor + height), thickness)
+    pygame.draw.line(SCREEN, BLACK, (x_coor, y_coor), (x_coor, y_coor + height), thickness)
+    pygame.draw.line(SCREEN, BLACK, (x_coor, y_coor + height), (x_coor + width, y_coor + height), thickness)
+
 
 def draw_grid2(row, column, puzzle):
     block_size = 100
@@ -276,9 +421,6 @@ def blurSurf(surface, amt):
     surf = pygame.transform.smoothscale(surface, scale_size)
     surf = pygame.transform.smoothscale(surf, surf_size)
     return surf
-
-
-
 
 if __name__ == "__main__":
     main()

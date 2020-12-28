@@ -117,19 +117,17 @@ class Solver:
 
 
 
-
 def main():
     tiles = [[8, 6, 7], [2, 5, 4], [3, 0, 1]]
     tiles2 = [[5, 1, 3, 2], [10, 6, 15, 7], [9, 8, 11, 4], [0, 13, 14, 12]]
     tiles3 = [[1, 2, 3], [4, 6, 5], [7, 8, 0]]
-    tiles4 = [[4, 2, 3], [1, 8, 5], [7, 6, 0]]
-    board = Board(tiles4)
+    tiles4 = [[4, 2, 1], [8, 5, 6], [3, 7, 0]]
+    tiles5 = [[12,6,5,10],[15,11,7,1],[3,14,13,2],[9,4,8,0]]
+    board = Board(tiles2)
     sol = Solver(board)
     print("The board is solvable? " + str(sol.isSolvable()))
-    '''
     for i in sol.solution():
         print(i)
-    '''
 
 if __name__ == "__main__":
     main()
