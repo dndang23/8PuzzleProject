@@ -1,4 +1,6 @@
+#Board class
 class Board:
+    #Variables
     dimensions = 0
     board = []
     manhattanCounter = 0
@@ -6,6 +8,7 @@ class Board:
     manhattan = 0
     hamming_var = 0
 
+    #Creates 2d array board
     def __init__(self, tiles):
         self.dimensions = len(tiles)
         counter = 1
@@ -15,6 +18,7 @@ class Board:
                 self.board[row][column] = tiles[row][column]
             counter = counter + self.dimensions
 
+    #Prints out the board
     def __str__(self):
         string = ""
         for row in range(self.dimensions):
@@ -23,6 +27,7 @@ class Board:
             string = string + "\n"
         return string
 
+    #Converts number into x coordinate
     def __getX(self, num):
         counter = 0
         while num > self.dimensions:
@@ -30,17 +35,21 @@ class Board:
             num = num - self.dimensions
         return counter
 
+    #Converts number into y coordinate
     def __getY(self, num):
         while num > self.dimensions:
             num = num - self.dimensions
         return num - 1
 
+    #Returns board
     def __getBoard(self):
         return self.board
 
+    #Returns dimension of board
     def dimension(self):
         return self.dimensions
 
+    #Calculates hamming of board
     def hamming(self):
         if self.hammingCounter == 0:
             counter = 0
@@ -53,6 +62,7 @@ class Board:
             self.hamming_var = counter;
         return self.hamming_var
 
+    #Calculates manhattan of board
     def manhattan(self):
         if self.manhattanCounter == 0:
             sum = 0
@@ -63,11 +73,13 @@ class Board:
             self.manhattan = sum
         return self.manhattan
 
+    #Checks if board is at its goal state, which is numerical ascending order
     def isGoal(self):
         if self.hamming() == 0:
             return True
         return False
 
+    #Given another board, checks if the two boards are the same
     def equals(self, y):
         if y == self:
             return True
@@ -86,6 +98,7 @@ class Board:
             return True
         return False
 
+    #Returns the neighbors of the board
     def neighbors(self):
         list = []
         x0 = 0
@@ -136,7 +149,7 @@ class Board:
 
         return list
 
-
+    #Swaps values in board array at board[0][0] and noard[1][1]
     def twin(self):
         temp = Board(self.board)
         copyBoard = temp.__getBoard()
@@ -159,6 +172,7 @@ class Board:
 
         return temp
 
+#Main method
 def main():
     tiles = [[1,2,3],[4,5,6],[7,0,8]]
     tiles2 = [[1,2,3],[4,5,6],[7,8,0]]
@@ -171,6 +185,7 @@ def main():
         print(i)
         print(str(i.equals(board)))
 
+#Calls main method
 if __name__ == "__main__":
     main()
 
