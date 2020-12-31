@@ -4,7 +4,7 @@ class Board:
     manhattanCounter = 0
     hammingCounter = 0
     manhattan = 0
-    hamming = 0
+    hamming_var = 0
 
     def __init__(self, tiles):
         self.dimensions = len(tiles)
@@ -50,8 +50,8 @@ class Board:
                     if self.board[row][column] != numTracker and self.board[row][column] != 0:
                         counter = counter + 1
                     numTracker = numTracker + 1;
-            self.hamming = counter;
-        return self.hamming
+            self.hamming_var = counter;
+        return self.hamming_var
 
     def manhattan(self):
         if self.manhattanCounter == 0:
@@ -159,22 +159,17 @@ class Board:
 
         return temp
 
-
-
-
-
-
-
-
-
 def main():
     tiles = [[1,2,3],[4,5,6],[7,0,8]]
     tiles2 = [[1,2,3],[4,5,6],[7,8,0]]
+
     board = Board(tiles)
     board2 = Board(tiles2)
-    print(board)
-    for i in board.neighbors():
+    print(str(board.equals(board2)))
+    print(str(board2.isGoal()))
+    for i in board2.neighbors():
         print(i)
+        print(str(i.equals(board)))
 
 if __name__ == "__main__":
     main()
