@@ -1,3 +1,4 @@
+#BoardVisualizer that creates a slider puzzle game
 import pygame
 import time
 import random
@@ -142,10 +143,10 @@ def main():
 
             #Creates the button to play the same puzzle
             reset_rect_offset = 5
-            reset_rect_width = record_timer_box[2]//2
+            reset_rect_width = record_timer_box[2]//2 + 2
             reset_rect_height = (win_txt_box_size - trophy_img_size - congrats_msg_box[3] - num_moves_box[3] - timer_box[3] - record_num_moves_box[3] - record_timer_box[3])//2
             reset_rect_border = 1
-            reset_rect_x = record_timer_box[0]
+            reset_rect_x = record_timer_box[0] - 2
             reset_rect_y = record_timer_box[1] + record_timer_box[3] + reset_rect_offset
             reset_rect = pygame.Rect(reset_rect_x, reset_rect_y,
                                           reset_rect_width, reset_rect_height)
@@ -155,10 +156,10 @@ def main():
 
             #Creates button to play a new puzzle
             diff_rect_offset = 5
-            diff_rect_width = record_timer_box[2]//2
+            diff_rect_width = record_timer_box[2]//2 + 2
             diff_rect_height = (win_txt_box_size - trophy_img_size - congrats_msg_box[3] - num_moves_box[3] - timer_box[3] - record_num_moves_box[3] - record_timer_box[3])//2
             diff_rect_border = 1
-            diff_rect_x = record_timer_box[0] + record_timer_box[2]//2 + diff_rect_offset
+            diff_rect_x = record_timer_box[0] + record_timer_box[2]//2 + diff_rect_offset + 2
             diff_rect_y = record_timer_box[1] + record_timer_box[3] + diff_rect_offset
             diff_rect = pygame.Rect(diff_rect_x, diff_rect_y,
                                           diff_rect_width, diff_rect_height)
@@ -179,11 +180,11 @@ def main():
 
             #Display the text on the button to replay the same puzzle
             reset_text_size = 10
-            write_centered_message("arial", reset_text_size, "Replay same puzzle", BLACK, reset_rect[0] + reset_rect[2]//2, reset_rect[1] + reset_rect[3]//2)
+            write_centered_message("arial", reset_text_size, "Replay current puzzle", BLACK, reset_rect[0] + reset_rect[2]//2 + 1, reset_rect[1] + reset_rect[3]//2)
 
             #Display the text on the button to play a new puzzle
             diff_text_size = 10
-            write_centered_message("arial", diff_text_size, "Play new puzzle", BLACK, diff_rect[0] + diff_rect[2]//2 , diff_rect[1] + diff_rect[3]//2)
+            write_centered_message("arial", diff_text_size, "Play new puzzle", BLACK, diff_rect[0] + diff_rect[2]//2 + 2, diff_rect[1] + diff_rect[3]//2)
 
             #Update the screen
             pygame.display.update()
@@ -254,7 +255,7 @@ def main():
 
             #Displays the button to reset the previous puzzle
             reset_rect_offset = 15
-            reset_rect_width = int(encourage_box[2]/1.3)
+            reset_rect_width = int(encourage_box[2]/1.1)
             reset_rect_height = (nice_try_box_size - smile_img_size - nice_try_msg_box[3] - encourage_box[3])//2
             reset_rect_border = 1
             reset_rect_x = encourage_box[0] + encourage_box[2]//2 + 5 - reset_rect_width - 10
@@ -267,7 +268,7 @@ def main():
 
             #Displays the button to play a new puzzle
             diff_rect_offset = 20
-            diff_rect_width = int(encourage_box[2]/1.3)
+            diff_rect_width = int(encourage_box[2]/1.1)
             diff_rect_height = (nice_try_box_size - smile_img_size - nice_try_msg_box[3] - encourage_box[3])//2
             diff_rect_border = 1
             diff_rect_x = encourage_box[0] + encourage_box[2]//2 + 5
@@ -291,7 +292,7 @@ def main():
 
             #Displays the text that states to replay the same puzzle
             reset_text_size = 10
-            write_centered_message("arial", reset_text_size, "Replay same puzzle", BLACK, reset_rect[0] + reset_rect[2]//2, reset_rect[1] + reset_rect[3]//2)
+            write_centered_message("arial", reset_text_size, "Replay current puzzle", BLACK, reset_rect[0] + reset_rect[2]//2, reset_rect[1] + reset_rect[3]//2)
 
             #Displays the text that states to play a new puzzle
             diff_text_size = 10
@@ -431,7 +432,7 @@ def main():
 
             #Displays text that states to the player if they would like to replay the current puzzle
             reset_text_size = 10
-            write_centered_message("arial", reset_text_size, "Replay same puzzle", BLACK,
+            write_centered_message("arial", reset_text_size, "Replay current puzzle", BLACK,
                                    reset_rect[0] + reset_rect[2] // 2, reset_rect[1] + reset_rect[3] // 2)
 
             #Displays text that states to the player if they would like to play a new puzzle
