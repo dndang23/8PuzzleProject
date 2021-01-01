@@ -58,6 +58,13 @@ def main():
     pygame.display.set_caption("8 Puzzle Visualizer")
     SCREEN = pygame.display.set_mode((WINDOW_HEIGHT, WINDOW_WIDTH))
 
+    #Creates game clock
+    CLOCK = pygame.time.Clock()
+
+    #Sets frames per second rates for the game
+    fps = 60
+    pause_fps = 2
+
     #Start clock
     START = time.time()
 
@@ -476,6 +483,7 @@ def main():
                         NUM_MOVES = 0
                         START = time.time()
 
+        #Displays a white background onto the screen
         SCREEN.fill(WHITE)
 
         #Displays the number of moves the players has made
@@ -559,13 +567,8 @@ def main():
                 solver_rect[3]:
                     #Make instance of solver class to solve puzzle
                     sol = Solver(Board(board_list))
-
-                    #Creates game clock
-                    clock = pygame.time.Clock()
-
-                    #Reduces fps
-                    frames_per_second = 3
-
+                    #Sets frames per second for displaying the solution
+                    sol_frames_per_second = 3
                     #Loops through the steps of the current puzzle to the goal state
                     for i in sol.solution():
                         #Process internal event handlers
@@ -574,21 +577,65 @@ def main():
                         board_list = i.board
                         SCREEN.fill(WHITE)
                         draw_solution(ROW, COLUMN, board_list)
-                        clock.tick(frames_per_second)
+                        CLOCK.tick(sol_frames_per_second)
                         pygame.display.flip()
                     #Starts nice try loop
                     NICE_TRY = True
-                    END = time.time()
+                    #Freezes the screen for a second to display the puzzle in its solved state
+                    CLOCK.tick(pause_fps)
                 #If user clicks pause button then pause game
                 elif pause_img_x <= position[0] <= pause_img_x + pause_img_size and pause_img_y <= position[1] <= pause_img_y + pause_img_size:
                     PAUSE = True
                     time_paused = time.time()
 
+        #If the puzzled has been solved, the screen will temporarily freeze
+        #to display the puzzle in its goal state
+        if GAME_OVER == True:
+            SCREEN.fill(WHITE)
+
+            score(NUM_MOVES)
+
+            stopwatch(round(END - START, 2))
+
+            draw_grid(ROW, COLUMN, board_list)
+
+            pause_offset = 1
+            pause_img_size = pause_img.get_rect().size[0]
+            pause_img_x = WINDOW_WIDTH - pause_img_size - pause_offset
+            pause_img_y = 0
+            pause_text_box = pygame.Rect(pause_img_x, pause_img_y,
+                                         pause_img_size, pause_img_size)
+
+            SCREEN.blit(pause_img, (pause_img_x, pause_img_y))
+
+            solver_rect_width = 150
+            solver_rect_height = 50
+            solver_rect_offset = 0
+            solver_rect_x = 2
+            solver_rect_y = WINDOW_HEIGHT - solver_rect_height - 4
+            solver_rect = pygame.Rect(solver_rect_x, solver_rect_y,
+                                      solver_rect_width, solver_rect_height)
+            pygame.draw.rect(SCREEN, BLACK, solver_rect)
+            SCREEN.fill(CRIMSON_RED, solver_rect)
+            draw_border_rect(BLACK, solver_rect[0], solver_rect[1], solver_rect[2], solver_rect[3], 3)
+
+            solver_text_size = 10
+            write_centered_message("arial", solver_text_size, "Struggling?", BLACK,
+                                   solver_rect[0] + solver_rect[2] // 2, solver_rect[1] + solver_rect[3] // 2 - 5)
+            write_centered_message("arial", solver_text_size, "Click for solution", BLACK,
+                                   solver_rect[0] + solver_rect[2] // 2, solver_rect[1] + solver_rect[3] // 2 + 5)
+
+            pygame.display.update()
+            CLOCK.tick(pause_fps)
+
         #Update screen
         pygame.display.update()
 
+        CLOCK.tick(fps)
+
    #Unintialize all aspects of pygame module
     pygame.quit()
+    quit()
 
 #Draw borders of rectangle using lines
 def draw_border_rect(color, x_coor, y_coor, width, height, thickness):
