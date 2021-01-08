@@ -34,7 +34,7 @@ play_img = pygame.image.load("play.png")
 eight_img = pygame.image.load("eight.png")
 
 def main():
-    #Global variable is the Screen
+    #Global variable is the window surface
     global SCREEN
 
     #Variables to use in game
